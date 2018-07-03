@@ -1,4 +1,3 @@
-package com.airsaid.mpermissionutils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
