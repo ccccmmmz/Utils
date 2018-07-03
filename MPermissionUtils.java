@@ -22,6 +22,12 @@ import java.util.List;
  */
 public class MPermissionUtils {
 
+    /**
+     * 请求权限对应的请求码
+     */
+    private static final int CALL_PHONE = 1;
+    public static final int SM = 2;
+
     private static int mRequestCode = -1;
 
     public static void requestPermissionsResult(Activity activity, int requestCode
@@ -199,6 +205,20 @@ public class MPermissionUtils {
      */
     private static boolean isOverMarshmallow() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
+    /**
+     * 拨打电话
+     */
+    public static void askCallPhonePermission(Activity mActivity,OnPermissionListener mOnPermissionListener){
+        requestPermissions(mActivity,CALL_PHONE,new String[]{Manifest.permission.CALL_PHONE},mOnPermissionListener);
+    }
+
+    /**
+     * 发送短信
+     */
+    public static void askSmPermission(Activity mActivity,OnPermissionListener mOnPermissionListener){
+        requestPermissions(mActivity,SM,new String[]{Manifest.permission.SEND_SMS},mOnPermissionListener);
     }
 
     public interface OnPermissionListener{
