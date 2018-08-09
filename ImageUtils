@@ -207,3 +207,56 @@
 		bitmap.setPixels(pix, 0, w, 0, 0, w, h);
 		return (bitmap);
 	}
+	
+	/**
+     *
+     * 保存图片到本地并同步到系统相册(保存时间不是1970-1-1)
+     */
+    public static String saveBitmapGetPath(Context context,Bitmap mBitmap,String fileName){
+
+        String savePath;
+        File filePic = null;
+        String insertImage;
+        if (Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            savePath = Environment.getExternalStorageDirectory().getPath()+VIP_SAVE_PATH;
+        } else {
+            savePath = context.getApplicationContext().getFilesDir()
+                    .getAbsolutePath()
+                    + VIP_SAVE_PATH;
+        }
+        FileOutputStream fos = null;
+        try {
+            filePic = new File(savePath + fileName + ".jpg");
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs();
+                filePic.createNewFile();
+            }
+            else {
+                // 这里不要返回 不然本地图片没法更新
+                //return filePic.getAbsolutePath();
+            }
+            fos = new FileOutputStream(filePic);
+            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            //插入图库
+            insertImage = MediaStore.Images.Media.insertImage(context.getContentResolver(), filePic.getAbsolutePath(), fileName, null);
+            // 发送广播，通知刷新图库的显示
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(getRealPathFromURI(context,Uri.parse(insertImage))))));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+        return filePic.getAbsolutePath();
+    }
